@@ -68,6 +68,8 @@ pub mod matrix {
             }
         }
 
+        pub fn get_data(&self)-> Vec<Vec<f64>> { self.data.clone() }
+
         ///# Description:
         /// Create a new matrix from a vector of vectors.
         ///
@@ -86,7 +88,7 @@ pub mod matrix {
         /// # Panics:
         /// Panics if the row is not of the same length as the matrix width.
         pub fn add_to_row(&mut self, j: usize, row: Vec<f64>) {
-            if row.len()!= self.width {
+            if row.len() != self.width {
                 panic!("Row length does not match matrix width");
             }
             for i in 0..self.width {
@@ -114,34 +116,53 @@ pub mod matrix {
 
         ///# Description:
         /// Calculates the determinant of the matrix.
-        pub fn determinant(&self) -> f64 {
+        pub fn det(&self) -> f64 {
+            if self.width != self.height {
+                panic!("Cannot calculate determinant of non square matrix");
+            }
             if self.height == 1 {
-                return self.data[0][0];
+                return self[0][0];
             }
 
             if self.height == 2 {
                 return self.data[0][0] * self.data[1][1] - self.data[0][1] * self.data[1][0];
             }
-            let mut val: f64 = 0.0;
-            let base: f64 = 1.0;
-            for i in 0..self.height {
-                val += base.powi(i as i32) * self.submatrix(i + 1, 0).determinant();
+
+            if self.height == 3 {
+                return self.data[0][0] * (self.data[1][1] * self.data[2][2] - self.data[1][2] * self.data[2][1])
+                        - self.data[0][1] * (self.data[1][0] * self.data[2][2] - self.data[1][2] * self.data[2][0])
+                        + self.data[0][2] * (self.data[1][0] * self.data[2][1] - self.data[1][1] * self.data[2][0]);
             }
 
-            val
+            let mut det = 0.0;
+            let i = 0;
+
+            for j in 0..self.width {
+                let alpha = (-1_i32).pow((j) as u32) as f64;
+                let a_ij = self[i][j];
+                det += alpha * a_ij * self.submatrix(i, j).det();
+            }
+            det
         }
+
 
         /// # Description:
         /// create a new matrix that is the submatrix of the current matrix,
         /// beginning at the given row and column.
-        fn submatrix(&self, row: usize, col: usize) -> Matrix {
-            let mut sub = Matrix::new(self.height - 1, self.width - 1);
-            for i in 0..row {
-                for j in 0..col {
-                    sub.data[i][j] = self.data[row + i % self.height][col + j % self.width];
+        pub fn submatrix(&self, row: usize, col: usize) -> Matrix {
+            let mut data: Vec<Vec<f64>> = vec![];
+
+            for i in 0..self.height {
+                if i == row { continue; }
+                let mut row: Vec<f64> = vec![];
+                for j in 0..self.height {
+                    if j == col { continue; }
+                    row.push(self[i][j]);
                 }
+                data.push(row);
             }
-            sub
+
+            Matrix::from_data(data)
         }
 
         ///# Description:

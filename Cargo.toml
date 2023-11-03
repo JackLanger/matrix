@@ -20,3 +20,4 @@ path = "src/main.rs"
 [dependencies]
 structopt = { version = "0.3.26", default-features = false }
 lgs_lib = {version= "0.1.0", path= "lgs_lib" }
+json = {version="0.12.4"}
