@@ -12,15 +12,17 @@ use lgs_lib::lgs::Matrix;
 ///
 /// - _**-m \<matrix\>**_: flag to set the matrix to be used for solving an linear system. should be passed in form of **[[1.0],[m.n]]**
 /// - _**-b <\vector\>**_: Vector to be solved against. should be passed in form of **[0.0, 0.0]**
-/// - _**-d**_: return determinant of the matrix passed as an argument (not implemented yet)
+/// - _**-s**_: solve the equation for the given vector.
+/// - _**-a**_: approximate the solution for the given vector (not implemented yet).
+/// - _**-d**_: return determinant of the matrix passed as an argument
 /// - _**-i**_: return the inverse matrix of the matrix passed as an argument (not implemented yet)
-/// - _**-t**_: return the transposed matrix passed as an argument (not implemented yet)
+/// - _**-t**_: return the transposed matrix passed as an argument
 #[derive(Debug, StructOpt)]
 #[structopt(name = "matrix", about = "Cli tool for matrix operations, including Solving tool for LGS")]
 struct Opt {
-    #[structopt(short = "m", long = "matrix", default_value = "[[]]")]
+    #[structopt(short = "m", long = "matrix", default_value = "")]
     matrix: String,
-    #[structopt(short = "b", long = "vector", default_value = "[]")]
+    #[structopt(short = "b", long = "vector", default_value = "")]
     vec: String,
     #[structopt(short = "d", long = "determinant")]
     determinant: bool,
@@ -28,6 +30,8 @@ struct Opt {
     // inverse: bool,
     #[structopt(short = "t", long = "transpose")]
     transpose: bool,
+    #[structopt(short = "s", long = "solve")]
+    solve: bool,
 }
 
 ///
@@ -43,8 +47,10 @@ fn main() {
     let matrix = Matrix::from_str(&opt.matrix[..]);
     let binding = opt.vec.replace("[", "").replace("]", "");
 
+    println!("M:{:?}", matrix.get_data());
+
     if opt.determinant {
-        println!("M:{:?}, Det:{:?}", matrix.get_data(), matrix.det());
+        println!("Det:{:?}", matrix.det());
     }
 
     // if opt.inverse {
@@ -53,15 +59,17 @@ fn main() {
     // }
 
     if opt.transpose {
-        println!("M:{:?} T: {:?}", matrix.get_data(), matrix.transpose().get_data());
+        println!("T: {:?}", matrix.transpose().get_data());
     }
 
-    if opt.vec.is_empty() || opt.vec != "[]" {
-        eprintln!("Invalid or empty Vector provided");
-        exit(1);
+    if opt.solve {
+        if opt.vec.is_empty() || opt.vec != "[]" {
+            eprintln!("Invalid or empty Vector provided");
+            exit(1);
+        } else {
+            let b: Vec<f64> = binding.split(",").map(|s| s.trim().parse::<f64>().unwrap()).collect();
+            let (m, v) = lgs::solve(matrix, b);
+            println!("{:?} => {:?}", m, v);
+        }
     }
-
-    let b: Vec<f64> = binding.split(",").map(|s| s.trim().parse::<f64>().unwrap()).collect();
-    let (m, v) = lgs::solve(matrix, b);
-    println!("{:?} => {:?}", m, v);
 }
