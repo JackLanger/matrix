@@ -19,7 +19,7 @@ pub mod LGS {
     ///
     /// Panics if the matrix provided is not of the size of the vector or square.
     pub fn solve(m: Matrix, v: Vec<f64>) -> (Matrix, Vec<f64>) {
-        let mut m = m.without_linear_dependencies();
+        let mut m = m.remove_linear_dependent_rows();
         let mut v = v; // shadow as mutable
         
         // let mut m = m;
@@ -60,7 +60,7 @@ pub mod LGS {
             let alpha: f64 = m[j][i] / m[i][i];
             v[j] -= alpha * v[i];
             let row = m[i].iter().map(|f| f * -alpha).collect();
-            m.add_row(j, row);
+            m.add_to_row(j, row);
         }
     }
 
@@ -75,7 +75,7 @@ pub mod LGS {
                 row[i] *= -alpha;
             }
 
-            m.add_row(j, row);
+            m.add_to_row(j, row);
         }
     }
 

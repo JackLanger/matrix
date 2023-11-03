@@ -1,6 +1,8 @@
 pub mod Matrix {
     use std::ops::{self, Index, IndexMut};
 
+    /// Matrix
+    /// Matrix struct, providing a simple interface to interact with matrices of floating point numbers.
     #[derive(Debug, Clone)]
     pub struct Matrix {
         pub height: usize,
@@ -9,18 +11,33 @@ pub mod Matrix {
     }
 
     impl Matrix {
+        ///# Description:
+        /// Create a new matrix of the given height and width.
+        /// The values are initialized to 0.0.
+        ///
+        /// # Arguments:
+        /// - height : usize, the height of the matrix
+        /// - width : usize, the width of the matrix
         pub fn new(height: usize, width: usize) -> Matrix {
             Matrix {
                 height,
                 width,
-                data: vec![vec![0_f64; height]; width],
+                data: vec![vec![0.0; height]; width],
             }
         }
 
+        ///# Description:
+        /// Create a new matrix from the given string.
+        /// If the string does not adhere to the legal format of an JSON array
+        /// and/or contains any other values than floating point numbers,
+        /// an empty matrix is returned.
+        ///
+        /// # Arguments:
+        /// - arr_str : &str; The string to convert to a matrix.
         pub fn from_str(arr_str: &str) -> Matrix {
             let mut data: Vec<Vec<f64>> = vec![];
             let sub_arrays = arr_str[1..arr_str.len() - 1].as_bytes();
-            if sub_arrays.len() <= 2{
+            if sub_arrays.len() <= 2 {
                 return Matrix {
                     height: 0,
                     width: 0,
@@ -49,6 +66,11 @@ pub mod Matrix {
             }
         }
 
+        ///# Description:
+        /// Create a new matrix from a vector of vectors.
+        ///
+        /// # Arguments:
+        /// - data: Vec<Vec<f64>>, The vector of vectors to convert to a matrix.
         pub fn from_data(data: Vec<Vec<f64>>) -> Matrix {
             Matrix {
                 height: data.len(),
@@ -57,18 +79,29 @@ pub mod Matrix {
             }
         }
 
-        pub fn add_row(&mut self, j: usize, row: Vec<f64>) {
+        ///# Description:
+        /// Adds a Vector to a row in the matrix.
+        /// # Panics:
+        /// Panics if the row is not of the same length as the matrix width.
+        pub fn add_to_row(&mut self, j: usize, row: Vec<f64>) {
+            if row.len()!= self.width {
+                panic!("Row length does not match matrix width");
+            }
             for i in 0..self.width {
                 self[j][i] += row[i];
             }
         }
 
-        pub fn without_linear_dependencies(self) -> Matrix {
+        /// # Description:
+        /// Remove linear dependencies from the matrix.
+        /// This returns a new Matrix without linear dependent rows.
+        /// The original matrix is unchanged.
+        pub fn remove_linear_dependent_rows(self) -> Matrix {
             let mut data: Vec<Vec<f64>> = self.data.clone();
 
             for i in (0..self.height).rev().step_by(1) {
                 for j in 0..i {
-                    if is_a_linear_depentent_row(&self[j], &self[i]) {
+                    if is_a_linear_dependent_row(&self[j], &self[i]) {
                         data.remove(i);
                     }
                 }
@@ -77,6 +110,8 @@ pub mod Matrix {
             Matrix::from_data(data)
         }
 
+        ///# Description:
+        /// Calculates the determinant of the matrix.
         pub fn determinant(&self) -> f64 {
             if self.height == 1 {
                 return self.data[0][0];
@@ -94,6 +129,9 @@ pub mod Matrix {
             val
         }
 
+        /// # Description:
+        /// create a new matrix that is the submatrix of the current matrix,
+        /// beginning at the given row and column.
         fn submatrix(&self, row: usize, col: usize) -> Matrix {
             let mut sub = Matrix::new(self.height - 1, self.width - 1);
             for i in 0..row {
@@ -104,6 +142,8 @@ pub mod Matrix {
             sub
         }
 
+        ///# Description:
+        /// Swap two rows in the matrix.
         pub fn swap_rows(&mut self, row: usize, other: usize) {
             if row >= self.height || other >= self.height {
                 panic!("Row or column index out of bounds");
@@ -112,6 +152,9 @@ pub mod Matrix {
             self.data.swap(row, other);
         }
 
+
+        /// # Description:
+        /// Create a new matrix that is the transposed of the current matrix.
         pub fn transpose(&self) -> Matrix {
             let mut tmp = Matrix::new(self.width, self.height);
             for i in 0..self.height {
@@ -123,7 +166,14 @@ pub mod Matrix {
         }
     }
 
-    pub(crate) fn is_a_linear_depentent_row(fst: &Vec<f64>, snd: &Vec<f64>) -> bool {
+    /// # Description:
+    /// Check if a row is linear dependent of another row.
+    /// A linear dependent row is a row,
+    /// that contains all the same values as the first row,
+    /// multiplied by a factor n where n is an element of R.
+    ///
+    /// e.g. [1, 1, 1] and [2,2,2] where [2, 2, 2] is linear dependent of [1, 1, 1].
+    pub(crate) fn is_a_linear_dependent_row(fst: &Vec<f64>, snd: &Vec<f64>) -> bool {
         if fst.is_empty() || snd.is_empty() {
             return false;
         }
@@ -208,10 +258,6 @@ pub mod Matrix {
     }
 
     impl PartialEq for Matrix {
-        fn ne(&self, other: &Self) -> bool {
-            !self.eq(other)
-        }
-
         fn eq(&self, other: &Self) -> bool {
             if self.height != other.height || self.width != other.width {
                 return false;
@@ -225,6 +271,10 @@ pub mod Matrix {
                 }
             }
             true
+        }
+
+        fn ne(&self, other: &Self) -> bool {
+            !self.eq(other)
         }
     }
 
