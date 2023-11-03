@@ -1,12 +1,19 @@
 use crate::matrix::matrix::*;
 
+fn create_4x4_matrix() -> Matrix {
+    Matrix::from_data(vec![
+        vec![1.0, 2.0, 52.0, 2.0],
+        vec![1.0, 0.0, 1.0, 2.0],
+        vec![3.0, 2.0, 12.0, 2.0],
+        vec![3.0, 5.0, 3.0, 2.0],
+    ])
+}
 
 #[test]
-fn test_create_matrix_from_json_str(){
-    
-    let m :Matrix = Matrix::from_str("[[2.0,2.0],[3.0,4.0],[5.0,6.0]]");
-    let expected = Matrix::from_data(vec![vec![2_f64, 2_f64],vec![3_f64, 4_f64],vec![5_f64, 6_f64]]);
-    assert_eq!(m,expected)
+fn test_create_matrix_from_json_str() {
+    let m: Matrix = Matrix::from_str("[[2.0,2.0],[3.0,4.0],[5.0,6.0]]");
+    let expected = Matrix::from_data(vec![vec![2_f64, 2_f64], vec![3_f64, 4_f64], vec![5_f64, 6_f64]]);
+    assert_eq!(m, expected)
 }
 
 #[test]
@@ -98,7 +105,7 @@ fn test_matrix_with_no_linear_dependencies() {
     let m: Matrix = Matrix::from_data(vec![vec![1_f64, 2_f64, 3_f64], vec![4_f64, 4_f64, 6_f64]]);
     let actual: Matrix = m.remove_linear_dependent_rows();
     let expectd: Matrix =
-        Matrix::from_data(vec![vec![1_f64, 2_f64, 3_f64], vec![4_f64, 4_f64, 6_f64]]);
+            Matrix::from_data(vec![vec![1_f64, 2_f64, 3_f64], vec![4_f64, 4_f64, 6_f64]]);
 
     assert_eq!(actual, expectd);
 }
@@ -109,22 +116,100 @@ fn test_row_is_linear_dependant_with_empty_vectors() {
 }
 
 #[test]
-fn test_row_linear_is_linear_dependent_is_true(){
+fn test_row_linear_is_linear_dependent_is_true() {
     assert!(is_a_linear_dependent_row(&vec![1.0], &vec![2.0]));
     assert!(is_a_linear_dependent_row(&vec![2.0], &vec![1.0]));
 }
 
 #[test]
-fn test_row_linear_dependent_row_with_3_values(){
-        assert!(!is_a_linear_dependent_row(&vec![1_f64, 2_f64, 3_f64], &vec![3_f64, 4_f64, 6_f64]));
-        assert!(!is_a_linear_dependent_row(&vec![1_f64, 2_f64, 3_f64], &vec![3_f64, 3_f64, 3_f64]));
+fn test_row_linear_dependent_row_with_3_values() {
+    assert!(!is_a_linear_dependent_row(&vec![1_f64, 2_f64, 3_f64], &vec![3_f64, 4_f64, 6_f64]));
+    assert!(!is_a_linear_dependent_row(&vec![1_f64, 2_f64, 3_f64], &vec![3_f64, 3_f64, 3_f64]));
 }
 
 
 #[test]
-fn test_remove_linear_dependent_row_from_matrix(){
-    
-    let m :Matrix = Matrix::from_data(vec![vec![2_f64, 2_f64],vec![3_f64, 4_f64],vec![5_f64, 6_f64], vec![6_f64, 6_f64]]);
-    let expected = Matrix::from_data(vec![vec![2_f64, 2_f64],vec![3_f64, 4_f64],vec![5_f64, 6_f64]]);
+fn test_remove_linear_dependent_row_from_matrix() {
+    let m: Matrix = Matrix::from_data(vec![vec![2_f64, 2_f64], vec![3_f64, 4_f64], vec![5_f64, 6_f64], vec![6_f64, 6_f64]]);
+    let expected = Matrix::from_data(vec![vec![2_f64, 2_f64], vec![3_f64, 4_f64], vec![5_f64, 6_f64]]);
     assert_eq!(m.remove_linear_dependent_rows(), expected)
 }
+
+
+#[test]
+fn calc_determinant_of_1x1_matrix() {
+    let m = Matrix::from_data(vec![vec![1_f64]]);
+    assert_eq!(m.det(), 1_f64);
+}
+
+#[test]
+fn calc_determinant_of_2x2_matrix() {
+    let m = Matrix::from_data(
+        vec![
+            vec![1_f64, 2_f64],
+            vec![3_f64, 4_f64],
+        ]);
+    assert_eq!(m.det(), -2_f64);
+}
+
+#[test]
+fn calc_determinant_of_4x4_matrix() {
+    let m = create_4x4_matrix();
+    assert_eq!(m.det(), 684_f64);
+}
+
+#[test]
+fn calc_determinant_of_3x3_matrix() {
+    let m = Matrix::from_data(
+        vec![
+            vec![1.0, 1.0, 1.0],
+            vec![2.0, 2.0, 2.0],
+            vec![3.0, 3.0, 3.0],
+        ]);
+    assert_eq!(m.det(), 0.0);
+}
+
+#[test]
+fn sub_matrix() {
+    let m = Matrix::from_data(vec![vec![1_f64, 2_f64], vec![3_f64, 4_f64]]);
+    let expected = Matrix::from_data(vec![vec![4_f64]]);
+    assert_eq!(m.submatrix(0, 0), expected);
+}
+
+
+#[test]
+fn sub_matrix_from_4x4() {
+    let m = create_4x4_matrix();
+    let expected = Matrix::from_data(vec![
+        vec![0.0, 1.0, 2.0],
+        vec![2.0, 12.0, 2.0],
+        vec![5.0, 3.0, 2.0],
+    ]);
+    assert_eq!(m.submatrix(0, 0), expected);
+}
+
+#[test]
+fn sub_matrix_from_4x4_col_1() {
+    let m = create_4x4_matrix();
+    let expected = Matrix::from_data(vec![
+        vec![1.0, 1.0, 2.0],
+        vec![3.0, 12.0, 2.0],
+        vec![3.0, 3.0, 2.0],
+    ]);
+
+    assert_eq!(m.submatrix(0, 1), expected);
+}
+
+#[test]
+fn sub_matrix_from_4x4_col_1_row_1() {
+    let m = create_4x4_matrix();
+
+    let expected = Matrix::from_data(vec![
+        vec![1.0, 52.0, 2.0],
+        vec![3.0, 12.0, 2.0],
+        vec![3.0, 3.0, 2.0],
+    ]);
+
+    assert_eq!(m.submatrix(1, 1), expected);
+}
+

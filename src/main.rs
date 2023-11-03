@@ -1,7 +1,9 @@
+use std::process::exit;
+
 use structopt::StructOpt;
+
 use lgs_lib::lgs;
 use lgs_lib::lgs::Matrix;
-
 
 /// # Opt
 /// These options are used to parse the command line arguments and are required for the program to run.
@@ -20,6 +22,12 @@ struct Opt {
     matrix: String,
     #[structopt(short = "b", long = "vector", default_value = "[]")]
     vec: String,
+    #[structopt(short = "d", long = "determinant")]
+    determinant: bool,
+    // #[structopt(short = "i", long = "inverse")]
+    // inverse: bool,
+    #[structopt(short = "t", long = "transpose")]
+    transpose: bool,
 }
 
 ///
@@ -28,11 +36,33 @@ struct Opt {
 ///
 fn main() {
     let opt = Opt::from_args();
+    if opt.matrix.is_empty() || opt.matrix == "[[]]" {
+        eprintln!("No matrix provided");
+        exit(1);
+    }
     let matrix = Matrix::from_str(&opt.matrix[..]);
     let binding = opt.vec.replace("[", "").replace("]", "");
-    let b:Vec<f64> = binding.split(",").map(|s| s.trim().parse::<f64>().unwrap()).collect();
 
-    let (m,v) = lgs::solve(matrix, b);
+    if opt.determinant {
 
-    println!("{:?} => {:?}",m,v);
+        println!("M:{:?}, Det:{:?}", matrix.get_data(), matrix.det());
+        exit(0);
+    }
+
+    // if opt.inverse {
+    //     let inv = matrix.inverse();
+    //     println!("Inverse: {:?}", inv);
+    // }
+
+    if opt.transpose {
+        println!("M:{:?} T: {:?}", matrix.get_data(), matrix.transpose().get_data());
+        exit(0);
+    }
+    if opt.vec.is_empty() || opt.vec != "[]" {
+        eprintln!("Invalid or empty Vector provided");
+        exit(1);
+    }
+    let b: Vec<f64> = binding.split(",").map(|s| s.trim().parse::<f64>().unwrap()).collect();
+    let (m, v) = lgs::solve(matrix, b);
+    println!("{:?} => {:?}", m, v);
 }
