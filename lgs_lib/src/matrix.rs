@@ -1,6 +1,7 @@
 /// # Matrix
 /// The matrix module contains the implementation and definition of the Matrix struct.
 pub mod matrix {
+    use std::io::empty;
     use std::ops::{self, Index, IndexMut};
 
     /// Matrix
@@ -37,25 +38,29 @@ pub mod matrix {
         /// # Arguments:
         /// - arr_str : &str; The string to convert to a matrix.
         pub fn from_str(arr_str: &str) -> Matrix {
-            let mut data: Vec<Vec<f64>> = vec![];
-            let sub_arrays = arr_str[1..arr_str.len() - 1].as_bytes();
-            if sub_arrays.len() <= 2 {
-                return Matrix {
-                    height: 0,
-                    width: 0,
-                    data,
-                };
+            let mut bytes = arr_str.as_bytes();
+
+            if bytes[0] == '[' as u8 && bytes[bytes.len() - 1] == ']' as u8 {
+                bytes = &bytes[1..bytes.len() - 1];
             }
 
+            // if does not start with '['
+            // is invalid array.
+            // We return an empty matrix.
+            if arr_str.len() <= 2 || bytes[0] != '[' as u8 {
+                return Matrix::new(0,0);
+            }
+
+            let mut data: Vec<Vec<f64>> = vec![];
             let mut j = 0;
-            for i in 0..sub_arrays.len() {
-                if '[' as u8 == sub_arrays[i] {
+            for i in 0..bytes.len() {
+                if '[' as u8 == bytes[i] {
                     j = i + 1;
                     continue;
                 }
 
-                if ']' as u8 == sub_arrays[i] {
-                    let nums = String::from_utf8_lossy(&sub_arrays[j..i]);
+                if ']' as u8 == bytes[i] {
+                    let nums = String::from_utf8_lossy(&bytes[j..i]);
                     let nums = nums.split(',').map(|s| s.trim().parse::<f64>().unwrap()).collect();
                     data.push(nums)
                 }
@@ -68,7 +73,7 @@ pub mod matrix {
             }
         }
 
-        pub fn get_data(&self)-> Vec<Vec<f64>> { self.data.clone() }
+        pub fn get_data(&self) -> Vec<Vec<f64>> { self.data.clone() }
 
         ///# Description:
         /// Create a new matrix from a vector of vectors.
@@ -76,9 +81,10 @@ pub mod matrix {
         /// # Arguments:
         /// - data: `Vec<Vec<f64>>`, The vector of vectors to convert to a matrix.
         pub fn from_data(data: Vec<Vec<f64>>) -> Matrix {
+
             Matrix {
                 height: data.len(),
-                width: data[0].len(),
+                width:data[0].len(),
                 data,
             }
         }
@@ -120,24 +126,15 @@ pub mod matrix {
             if self.width != self.height {
                 panic!("Cannot calculate determinant of non square matrix");
             }
+
             if self.height == 1 {
                 return self[0][0];
-            }
-
-            if self.height == 2 {
-                return self.data[0][0] * self.data[1][1] - self.data[0][1] * self.data[1][0];
-            }
-
-            if self.height == 3 {
-                return self.data[0][0] * (self.data[1][1] * self.data[2][2] - self.data[1][2] * self.data[2][1])
-                        - self.data[0][1] * (self.data[1][0] * self.data[2][2] - self.data[1][2] * self.data[2][0])
-                        + self.data[0][2] * (self.data[1][0] * self.data[2][1] - self.data[1][1] * self.data[2][0]);
             }
 
             let mut det = 0.0;
             let i = 0;
 
-            for j in 0..self.width {
+            for j in 0..self.width {  // todo: bench and run multithreaded
                 let alpha = (-1_i32).pow((j) as u32) as f64;
                 let a_ij = self[i][j];
                 det += alpha * a_ij * self.submatrix(i, j).det();
@@ -189,6 +186,7 @@ pub mod matrix {
         }
     }
 
+
     /// # Description:
     /// Check if a row is linear dependent of another row.
     /// A linear dependent row is a row,
@@ -237,6 +235,7 @@ pub mod matrix {
     }
 
     impl ops::Mul<f64> for Matrix {
+        // todo: run multithreaded
         type Output = Matrix;
         fn mul(mut self, v: f64) -> Self::Output {
             for i in 0..self.height {
@@ -316,4 +315,8 @@ pub mod matrix {
 }
 
 #[cfg(test)]
-mod matrix_test;
+mod matrix_ops_test;
+mod matrix_create_test;
+mod matrix_det_test;
+mod matrix_sub_test;
+mod matrix_linear_dependencies;

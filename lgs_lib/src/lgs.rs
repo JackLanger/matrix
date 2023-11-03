@@ -85,15 +85,7 @@ pub mod lgs {
         }
     }
 
-    fn swap_rows_if_is_leading_zero(m: &mut Matrix, i: usize) {
-        if m[i][i] == 0.0{
-            for k in (i+1)..m.height {
-                if  m[k][i] != 0.0 {
-                    m.swap_rows(i, k);
-                }
-            }
-        }
-    }
+
 
 
 
