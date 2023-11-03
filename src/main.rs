@@ -44,9 +44,7 @@ fn main() {
     let binding = opt.vec.replace("[", "").replace("]", "");
 
     if opt.determinant {
-
         println!("M:{:?}, Det:{:?}", matrix.get_data(), matrix.det());
-        exit(0);
     }
 
     // if opt.inverse {
@@ -56,12 +54,13 @@ fn main() {
 
     if opt.transpose {
         println!("M:{:?} T: {:?}", matrix.get_data(), matrix.transpose().get_data());
-        exit(0);
     }
+
     if opt.vec.is_empty() || opt.vec != "[]" {
         eprintln!("Invalid or empty Vector provided");
         exit(1);
     }
+
     let b: Vec<f64> = binding.split(",").map(|s| s.trim().parse::<f64>().unwrap()).collect();
     let (m, v) = lgs::solve(matrix, b);
     println!("{:?} => {:?}", m, v);
