@@ -1,7 +1,6 @@
 /// # Matrix
 /// The matrix module contains the implementation and definition of the Matrix struct.
 pub mod matrix {
-    use std::io::empty;
     use std::ops::{self, Index, IndexMut};
 
     /// Matrix
