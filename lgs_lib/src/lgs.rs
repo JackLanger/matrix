@@ -52,6 +52,9 @@ pub mod lgs {
         for i in 0..v.len() {
             let a = 1.0/m[i][i]; 
             for k in 0..m.width {
+                if m[i][k] == 0.0 {continue;}
+                if m[i][k] == -0.0 {m[i][k] = 0.0; continue;}
+
                 m[i][k] *= a;
             }
             v[i] *= a;

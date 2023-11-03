@@ -63,13 +63,13 @@ fn main() {
     }
 
     if opt.solve {
-        if opt.vec.is_empty() || opt.vec != "[]" {
+        if opt.vec.is_empty() || opt.vec == "[]" {
             eprintln!("Invalid or empty Vector provided");
             exit(1);
         } else {
             let b: Vec<f64> = binding.split(",").map(|s| s.trim().parse::<f64>().unwrap()).collect();
             let (m, v) = lgs::solve(matrix, b);
-            println!("{:?} => {:?}", m, v);
+            println!("M:{:?}, b: {:?}", m.get_data(), v);
         }
     }
 }
