@@ -1,4 +1,4 @@
-use crate::matrix::Matrix::*;
+use crate::matrix::matrix::*;
 
 
 #[test]

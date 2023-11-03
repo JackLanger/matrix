@@ -1,7 +1,10 @@
-pub mod LGS {
+/// # Description:
+/// Linear Gaussian Separation (LGS),
+/// is a method for solving a system of linear equations against a given set of variables.
+pub mod lgs {
     use std::{mem::swap, ops::{Add, self}, thread::JoinHandle, collections::btree_map::Keys};
 
-    pub use crate::matrix::Matrix::*;
+    pub use crate::matrix::matrix::*;
 
     /// # Solve
     ///
@@ -13,7 +16,7 @@ pub mod LGS {
     /// # Parameters
     ///
     /// m : Matrix the coefficients of the system
-    /// v: Vec<f64> vector to solve against
+    /// v: `Vec<f64>` vector to solve against
     ///
     /// # Panics if
     ///

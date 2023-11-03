@@ -1,4 +1,6 @@
-pub mod Matrix {
+/// # Matrix
+/// The matrix module contains the implementation and definition of the Matrix struct.
+pub mod matrix {
     use std::ops::{self, Index, IndexMut};
 
     /// Matrix
@@ -70,7 +72,7 @@ pub mod Matrix {
         /// Create a new matrix from a vector of vectors.
         ///
         /// # Arguments:
-        /// - data: Vec<Vec<f64>>, The vector of vectors to convert to a matrix.
+        /// - data: `Vec<Vec<f64>>`, The vector of vectors to convert to a matrix.
         pub fn from_data(data: Vec<Vec<f64>>) -> Matrix {
             Matrix {
                 height: data.len(),

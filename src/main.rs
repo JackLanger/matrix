@@ -1,6 +1,6 @@
 use structopt::StructOpt;
-use lgs_lib::LGS;
-use lgs_lib::LGS::Matrix;
+use lgs_lib::lgs;
+use lgs_lib::lgs::Matrix;
 
 
 /// # Opt
@@ -32,7 +32,7 @@ fn main() {
     let binding = opt.vec.replace("[", "").replace("]", "");
     let b:Vec<f64> = binding.split(",").map(|s| s.trim().parse::<f64>().unwrap()).collect();
 
-    let (m,v) = LGS::solve(matrix, b);
+    let (m,v) = lgs::solve(matrix, b);
 
     println!("{:?} => {:?}",m,v);
 }
