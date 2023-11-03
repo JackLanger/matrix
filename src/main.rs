@@ -26,8 +26,8 @@ struct Opt {
     vec: String,
     #[structopt(short = "d", long = "determinant")]
     determinant: bool,
-    // #[structopt(short = "i", long = "inverse")]
-    // inverse: bool,
+    #[structopt(short = "i", long = "inverse")]
+    inverse: bool,
     #[structopt(short = "t", long = "transpose")]
     transpose: bool,
     #[structopt(short = "s", long = "solve")]
