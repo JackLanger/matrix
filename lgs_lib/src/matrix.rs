@@ -1,8 +1,7 @@
 /// # Matrix
 /// The matrix module contains the implementation and definition of the Matrix struct.
 pub mod matrix {
-    use std::ops::{self, Index, IndexMut};
-
+    
     /// Matrix
     /// Matrix struct, providing a simple interface to interact with matrices of floating point numbers.
     #[derive(Debug, Clone)]
@@ -47,7 +46,7 @@ pub mod matrix {
             // is invalid array.
             // We return an empty matrix.
             if arr_str.len() <= 2 || bytes[0] != '[' as u8 {
-                return Matrix::new(0,0);
+                return Matrix::new(0, 0);
             }
 
             let mut data: Vec<Vec<f64>> = vec![];
@@ -60,7 +59,10 @@ pub mod matrix {
 
                 if ']' as u8 == bytes[i] {
                     let nums = String::from_utf8_lossy(&bytes[j..i]);
-                    let nums = nums.split(',').map(|s| s.trim().parse::<f64>().unwrap()).collect();
+                    let nums = nums
+                        .split(',')
+                        .map(|s| s.trim().parse::<f64>().unwrap())
+                        .collect();
                     data.push(nums)
                 }
             }
@@ -72,7 +74,9 @@ pub mod matrix {
             }
         }
 
-        pub fn get_data(&self) -> Vec<Vec<f64>> { self.data.clone() }
+        pub fn get_data(&self) -> Vec<Vec<f64>> {
+            self.data.clone()
+        }
 
         ///# Description:
         /// Create a new matrix from a vector of vectors.
@@ -80,10 +84,9 @@ pub mod matrix {
         /// # Arguments:
         /// - data: `Vec<Vec<f64>>`, The vector of vectors to convert to a matrix.
         pub fn from_data(data: Vec<Vec<f64>>) -> Matrix {
-
             Matrix {
                 height: data.len(),
-                width:data[0].len(),
+                width: data[0].len(),
                 data,
             }
         }
@@ -133,14 +136,14 @@ pub mod matrix {
             let mut det = 0.0;
             let i = 0;
 
-            for j in 0..self.width {  // todo: bench and run multithreaded
+            for j in 0..self.width {
+                // todo: bench and run multithreaded
                 let alpha = (-1_i32).pow((j) as u32) as f64;
                 let a_ij = self[i][j];
                 det += alpha * a_ij * self.submatrix(i, j).det();
             }
             det
         }
-
 
         /// # Description:
         /// create a new matrix that is the submatrix of the current matrix,
@@ -149,10 +152,14 @@ pub mod matrix {
             let mut data: Vec<Vec<f64>> = vec![];
 
             for i in 0..self.height {
-                if i == row { continue; }
+                if i == row {
+                    continue;
+                }
                 let mut row: Vec<f64> = vec![];
                 for j in 0..self.height {
-                    if j == col { continue; }
+                    if j == col {
+                        continue;
+                    }
                     row.push(self[i][j]);
                 }
                 data.push(row);
@@ -171,7 +178,6 @@ pub mod matrix {
             self.data.swap(row, other);
         }
 
-
         /// # Description:
         /// Create a new matrix that is the transposed of the current matrix.
         pub fn transpose(&self) -> Matrix {
@@ -184,7 +190,6 @@ pub mod matrix {
             tmp
         }
     }
-
 
     /// # Description:
     /// Check if a row is linear dependent of another row.
@@ -209,114 +214,15 @@ pub mod matrix {
         true
     }
 
-    impl ops::Add<Matrix> for Matrix {
-        type Output = Matrix;
-        fn add(mut self, m: Matrix) -> Self::Output {
-            for i in 0..self.height {
-                for j in 0..self.width {
-                    self[i][j] += m[i][j];
-                }
-            }
-            self
-        }
-    }
-
-    impl ops::Sub<Matrix> for Matrix {
-        type Output = Matrix;
-        fn sub(mut self, m: Matrix) -> Self::Output {
-            for i in 0..self.height {
-                for j in 0..self.width {
-                    self[i][j] -= m[i][j];
-                }
-            }
-            self
-        }
-    }
-
-    impl ops::Mul<f64> for Matrix {
-        // todo: run multithreaded
-        type Output = Matrix;
-        fn mul(mut self, v: f64) -> Self::Output {
-            for i in 0..self.height {
-                for j in 0..self.width {
-                    self[i][j] *= v;
-                }
-            }
-            self
-        }
-    }
-
-    impl ops::Mul<Matrix> for Matrix {
-        type Output = Matrix;
-        fn mul(self, m: Matrix) -> Self::Output {
-            if self.width != m.height {
-                panic!("Matrix dimensions do not match");
-            }
-
-            let mut tmp = Matrix::new(self.height, m.width);
-
-            for i in 0..self.height {
-                for j in 0..m.width {
-                    for k in 0..self.width {
-                        tmp[i][j] += self[i][k] * m[k][j];
-                    }
-                }
-            }
-            tmp
-        }
-    }
-
-    impl ops::Div<f64> for Matrix {
-        type Output = Matrix;
-        fn div(mut self, rhs: f64) -> Self::Output {
-            for i in 0..self.height {
-                for j in 0..self.width {
-                    self[i][j] /= rhs;
-                }
-            }
-            self
-        }
-    }
-
-    impl PartialEq for Matrix {
-        fn eq(&self, other: &Self) -> bool {
-            if self.height != other.height || self.width != other.width {
-                return false;
-            }
-
-            for i in 0..self.height {
-                for j in 0..self.width {
-                    if self[i][j] != other[i][j] {
-                        return false;
-                    }
-                }
-            }
-            true
-        }
-
-        fn ne(&self, other: &Self) -> bool {
-            !self.eq(other)
-        }
-    }
-
-    impl Index<usize> for Matrix {
-        type Output = Vec<f64>;
-        fn index(&self, index: usize) -> &Vec<f64> {
-            &self.data[index]
-        }
-    }
-
-    impl IndexMut<usize> for Matrix {
-        fn index_mut(&mut self, i: usize) -> &mut Vec<f64> {
-            &mut self.data[i]
-        }
-    }
+    pub mod ops;
 }
 
 #[cfg(test)]
 #[feature(test)]
-mod matrix_ops_test;
-mod matrix_create_test;
-mod matrix_det_test;
-mod matrix_sub_test;
-mod matrix_linear_dependencies;
+mod test {
+    mod matrix_create_test;
+    mod matrix_det_test;
+    mod matrix_linear_dependencies;
+    mod matrix_ops_test;
+    mod matrix_sub_test;
+}
