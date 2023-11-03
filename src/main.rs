@@ -1,6 +1,5 @@
 use std::process::exit;
 
-use json::object;
 use structopt::StructOpt;
 
 use lgs_lib::lgs;
