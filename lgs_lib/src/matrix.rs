@@ -315,6 +315,7 @@ pub mod matrix {
 }
 
 #[cfg(test)]
+#[feature(test)]
 mod matrix_ops_test;
 mod matrix_create_test;
 mod matrix_det_test;
