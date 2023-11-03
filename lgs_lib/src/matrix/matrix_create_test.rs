@@ -1,4 +1,4 @@
-use crate::lgs::Matrix;
+use crate::matrix::matrix::Matrix;
 
 #[test]
 fn test_create_matrix_from_json_str() {

@@ -1,4 +1,4 @@
-use crate::lgs::Matrix;
+use crate::matrix::matrix::Matrix;
 
 fn create_4x4_matrix() -> Matrix {
     Matrix::from_data(vec![

@@ -1,5 +1,4 @@
-use crate::lgs::{is_a_linear_dependent_row, Matrix};
-
+use crate::matrix::matrix::{is_a_linear_dependent_row, Matrix};
 #[test]
 fn test_matrix_with_no_linear_dependencies() {
     let m: Matrix = Matrix::from_data(vec![vec![1_f64, 2_f64, 3_f64], vec![4_f64, 4_f64, 6_f64]]);

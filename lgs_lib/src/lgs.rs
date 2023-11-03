@@ -93,4 +93,4 @@ pub mod lgs {
 
 #[cfg(test)]
 mod lgs_test;
-mod matrix;
+mod lgs_inverse_test;

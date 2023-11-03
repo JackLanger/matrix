@@ -7,6 +7,6 @@ edition = "2021"
 
 [lib]
 name="lgs_lib"
-path= "src/lgs.rs"
+#path= "src/lgs.rs"
 
 [dependencies]

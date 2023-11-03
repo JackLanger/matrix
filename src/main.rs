@@ -1,9 +1,9 @@
 use std::process::exit;
 
 use structopt::StructOpt;
+use lgs_lib::lgs::lgs;
+use lgs_lib::matrix::matrix::Matrix;
 
-use lgs_lib::lgs;
-use lgs_lib::lgs::Matrix;
 
 /// # Opt
 /// These options are used to parse the command line arguments and are required for the program to run.
