@@ -2,7 +2,7 @@ pub mod Matrix {
     use std::ops::{self, Index, IndexMut};
 
     #[derive(Debug, Clone)]
-    pub(crate) struct Matrix {
+    pub struct Matrix {
         pub height: usize,
         pub width: usize,
         data: Vec<Vec<f64>>,
@@ -236,7 +236,7 @@ pub mod Matrix {
     }
 
     impl IndexMut<usize> for Matrix {
-        fn index_mut<'a>(&'a mut self, i: usize) -> &'a mut Vec<f64> {
+        fn index_mut(&mut self, i: usize) -> &mut Vec<f64> {
             &mut self.data[i]
         }
     }

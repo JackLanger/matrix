@@ -1,4 +1,4 @@
-use crate::lgs::LGS::*;
+use crate::LGS::{Matrix, solve};
 
 #[test]
 fn test_solve_with_x() {

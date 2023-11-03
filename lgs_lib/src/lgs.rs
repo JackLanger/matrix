@@ -18,7 +18,7 @@ pub mod LGS {
     /// # Panics if
     ///
     /// Panics if the matrix provided is not of the size of the vector or square.
-    pub(crate) fn solve(m: Matrix, v: Vec<f64>) -> (Matrix, Vec<f64>) {
+    pub fn solve(m: Matrix, v: Vec<f64>) -> (Matrix, Vec<f64>) {
         let mut m = m.without_linear_dependencies();
         let mut v = v; // shadow as mutable
         
@@ -95,3 +95,4 @@ pub mod LGS {
 
 #[cfg(test)]
 mod lgs_test;
+mod matrix;

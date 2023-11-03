@@ -1,10 +1,6 @@
-pub mod lgs;
-pub mod matrix;
-
-use std::process;
 use structopt::StructOpt;
-use crate::lgs::LGS;
-use crate::matrix::Matrix::Matrix;
+use lgs_lib::LGS;
+use lgs_lib::LGS::Matrix;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "matrix", about = "Cli tool for matrix operations, including Solving tool for LGS")]
