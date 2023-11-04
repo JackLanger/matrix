@@ -1,9 +1,8 @@
 use std::process::exit;
 
-use structopt::StructOpt;
 use lgs_lib::lgs::lgs;
 use lgs_lib::matrix::matrix::Matrix;
-
+use structopt::StructOpt;
 
 /// # Opt
 /// These options are used to parse the command line arguments and are required for the program to run.
@@ -18,7 +17,10 @@ use lgs_lib::matrix::matrix::Matrix;
 /// - _**-i**_: return the inverse matrix of the matrix passed as an argument (not implemented yet)
 /// - _**-t**_: return the transposed matrix passed as an argument
 #[derive(Debug, StructOpt)]
-#[structopt(name = "matrix", about = "Cli tool for matrix operations, including Solving tool for LGS")]
+#[structopt(
+    name = "matrix",
+    about = "Cli tool for matrix operations, including Solving tool for LGS"
+)]
 struct Opt {
     #[structopt(short = "m", long = "matrix", default_value = "")]
     matrix: String,
@@ -32,6 +34,8 @@ struct Opt {
     transpose: bool,
     #[structopt(short = "s", long = "solve")]
     solve: bool,
+    #[structopt(short = "a", long = "aproximate")]
+    aproximate: bool,
 }
 
 ///
@@ -44,7 +48,7 @@ fn main() {
         eprintln!("No matrix provided");
         exit(1);
     }
-    let matrix = Matrix::from_str(&opt.matrix[..]);
+    let mut matrix = Matrix::from_str(&opt.matrix[..]);
     let binding = opt.vec.replace("[", "").replace("]", "");
 
     println!("M:{:?}", matrix.get_data());
@@ -67,7 +71,14 @@ fn main() {
             eprintln!("Invalid or empty Vector provided");
             exit(1);
         } else {
-            let b: Vec<f64> = binding.split(",").map(|s| s.trim().parse::<f64>().unwrap()).collect();
+            let b: Vec<f64> = binding
+                .split(",")
+                .map(|s| s.trim().parse::<f64>().unwrap())
+                .collect();
+
+            if opt.aproximate {
+                matrix = matrix.transpose() * matrix;
+            }
             let (m, v) = lgs::solve(matrix, b);
             println!("M:{:?}, b: {:?}", m.get_data(), v);
         }
