@@ -4,6 +4,66 @@
 pub mod lgs {
     pub use crate::matrix::matrix::*;
 
+
+    /// # Caclulate the inverse of a matrix.
+    /// An inverse of a matrix is the matrix that results in a normal matrix when multiplied with the matrix. 
+    /// A normal matrix is a matrix where all values but the main diagonal are 0.
+    /// The main diagonal holds only values that are 1.0;
+    /// 
+    /// # Parameters:
+    /// - m: Matrix - The matrix
+    pub fn inverse(m: Matrix) -> Matrix {
+        let mut m = m.remove_linear_dependent_rows();
+        if m.width != m.height {
+            panic!("Matrix must be square");
+        }
+        
+        let mut v = Matrix::new(m.height, m.height);
+        for i in 0..m.height {
+         v[i][i] = 1.0;
+        }
+
+         // shadow as mutable
+        // iterate down
+        for i in 0..m.height {
+            for j in (i + 1)..m.height {
+            
+                let alpha: f64 =  m[j][i]/ m[i][i];
+                let mut row = m[i].clone();
+                let mut v_row = v[j].clone();
+
+                for i in 0..row.len(){
+                    row[i] *= -alpha;
+                    v_row[i] *= -alpha;
+                }
+    
+                m.add_to_row(j, row);
+                v.add_to_row(j, v_row);
+            }
+        }
+        // iterate up
+        for i in (0..m.height).rev().step_by(1) {
+            for j in 0..i {
+                let alpha: f64 = m[j][i] / m[i][i];
+                let row = m[i].iter().map(|f| f * -alpha).collect();
+                let v_row = v[i].iter().map(|f| f * -alpha).collect();
+                m.add_to_row(j, row);
+                v.add_to_row(j, v_row);
+            }
+        }
+        // normalize
+        for i in 0..v.height {
+            let a = 1.0/m[i][i]; 
+            for k in 0..m.width {
+                if v[i][k] == 0.0 {continue;}
+                if v[i][k] == -0.0 {m[i][k] = 0.0; continue;}
+
+                v[i][k] *= a;
+            }
+        }
+        v
+    }
+
     /// # Solve
     ///
     /// Solves a system of linear equations. If the Matrix contains linear dependencies,
@@ -84,7 +144,7 @@ pub mod lgs {
     }
 
 
-
+    
 
 
 }
