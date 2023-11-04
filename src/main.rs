@@ -34,7 +34,7 @@ struct Opt {
     transpose: bool,
     #[structopt(short = "s", long = "solve")]
     solve: bool,
-    #[structopt(short = "a", long = "aproximate")]
+#[structopt(short = "a", long = "aproximate")]
     aproximate: bool,
 }
 
@@ -77,6 +77,12 @@ fn main() {
                 .collect();
 
             if opt.aproximate {
+                if matrix.width!= b.len() {
+                    println!("Matrix cannot be aproximated, as the width of the matrix does not match the length of the vector, 
+                    \nsquaring the matrix will result in a square matrix that is of different dimensions than the vector."); 
+                    
+                    exit(1);
+                }
                 matrix = matrix.transpose() * matrix;
             }
             let (m, v) = lgs::solve(matrix, b);
