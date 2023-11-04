@@ -49,23 +49,18 @@ fn main() {
         exit(1);
     }
     let mut matrix = Matrix::from_str(&opt.matrix[..]);
-    let binding = opt.vec.replace("[", "").replace("]", "");
-
+    
     println!("M:{:?}", matrix.get_data());
+    
+    calc_determinant_if_opt(&opt,&matrix);
+    calculate_inverse_if_opt(&opt, &matrix);
+    transpose_if_opt(&opt,&matrix);
+    solve_if_opt(opt,  matrix);
+}
 
-    if opt.determinant {
-        println!("Det:{:?}", matrix.det());
-    }
-
-    // if opt.inverse {
-    //     let inv = matrix.inverse();
-    //     println!("Inverse: {:?}", inv);
-    // }
-
-    if opt.transpose {
-        println!("T: {:?}", matrix.transpose().get_data());
-    }
-
+fn solve_if_opt(opt: Opt, matrix: Matrix) {
+    
+    let binding = opt.vec.replace("[", "").replace("]", "");
     if opt.solve {
         if opt.vec.is_empty() || opt.vec == "[]" {
             eprintln!("Invalid or empty Vector provided");
@@ -76,17 +71,42 @@ fn main() {
                 .map(|s| s.trim().parse::<f64>().unwrap())
                 .collect();
 
-            if opt.aproximate {
-                if matrix.width!= b.len() {
-                    println!("Matrix cannot be aproximated, as the width of the matrix does not match the length of the vector, 
-                    \nsquaring the matrix will result in a square matrix that is of different dimensions than the vector."); 
-                    
-                    exit(1);
-                }
-                matrix = matrix.transpose() * matrix;
-            }
-            let (m, v) = lgs::solve(matrix, b);
+                let m = if opt.aproximate {
+                    if matrix.width != b.len() {
+                        println!("Matrix cannot be aproximated, as the width of the matrix does not match the length of the vector, 
+                        squaring the matrix will result in a square matrix that is of different dimensions than the vector."); 
+                
+                        exit(1);
+                    }
+                
+                    let clone = matrix.clone();
+                    (clone.transpose()) * clone
+                } else {
+                    matrix.clone()
+                };
+                
+            let (m, v) = lgs::solve(m, b);
             println!("M:{:?}, b: {:?}", m.get_data(), v);
         }
+    }
+}
+
+
+fn transpose_if_opt(opt: &Opt, matrix: &Matrix) {
+    if opt.transpose {
+        println!("T: {:?}", matrix.transpose().get_data());
+    }
+}
+
+fn calculate_inverse_if_opt(opt: &Opt, matrix: &Matrix) {
+    if opt.inverse {
+        let inv = lgs::inverse(matrix.clone());
+        println!("Inverse: {:?}", inv);
+    }
+}
+
+fn calc_determinant_if_opt(opt: &Opt, matrix: &Matrix) {
+    if opt.determinant {
+        println!("Det:{:?}", matrix.det());
     }
 }
